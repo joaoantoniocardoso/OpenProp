@@ -1,0 +1,347 @@
+OpenProp User Guide
+10/21/2013
+
+Prof. Brenden Epps,     Thayer School of Engineering at Dartmouth College
+Prof. Richard Kimball,  Maine Maritime Academy
+
+------------------------------------------------------------------------------------------------
+Setup:
+
+1. Download OpenProp_v3.3.3.zip from the OpenProp website: http://engineering.dartmouth.edu/openprop .  
+
+2. Move the zip file to any convenient parent directory:
+ 	(e.g. <parent> == /Users/bepps/Documents/) 
+
+3. Unzip OpenProp_v3.3.3.zip.  The "OpenProp" folder should now appear in the "parent" directory: 
+	(e.g. <OpenProp> == /Users/bepps/Documents/OpenProp_v3.3.3/)
+
+
+------------------------------------------------------------------------------------------------
+Running OpenProp at the command line:
+
+1. OpenProp can be run at the Matlab command line using various function calls.  The usage 
+   is illustrated in the examples folders:
+
+	./Examples/Ex*
+
+2.  Use the templates in the Example folders to get started on your design.  The basic commands
+    are as follows:
+	>> Run_input_script, 			       (creates pt data structure and pt.input)
+	>> pt.design   = EppsOptimizer(pt.input);
+	>> pt.states   = Analyze(pt,[0:0.1:10]);
+	>> pt.geometry = Geometry(pt);
+
+3. Users are encouraged to create a new folder for each propeller/turbine design they create.  
+
+
+------------------------------------------------------------------------------------------------
+Running OpenProp using the graphical user interface (GUI):
+
+1. OpenProp can also be run using the graphical user interface (GUI).
+
+2. In Matlab, change the working directory to the "OpenProp" folder. 
+
+3. At the command line, type:
+	 >> openprop
+
+	This loads the Single Design GUI.  
+
+4. To perform a single propeller/turbine design, input the desired inputs to the GUI, and 
+   press the "Run OpenProp" button.
+
+   To perform a parametric design study, choose "Parametric Study" from the pull-down menu in
+   the top left corner of the GUI.
+
+
+------------------------------------------------------------------------------------------------
+GUI file structure and data input/output:
+
+1. In OpenProp, all propeller/turbine data is saved in a data structure called "pt".  
+
+2. Upon execution of a "Single Design" or "Parametric Study", OpenProp will look for the
+   directory <OpenProp>/filename/ and will create that directory if it does not exist:
+  	(e.g. /Users/bepps/Documents/OpenProp_v3.3.2/DefaultPropeller)
+
+   The pt data structure is always saved in <OpenProp>/filename/filename.mat .
+
+   NOTE: When running a "Single Design", the following data structures are overwritten:
+		pt.filename
+		pt.date
+		pt.input
+		pt.design
+		pt.geometry
+		pt.states
+	When running a "Parametric Study", the following data structures are overwritten:
+		pt.name
+		pt.date
+		pt.parinput
+		pt.paroutput
+
+	In order to avoid overwriting previous designs, change the "filename".
+
+
+3. In the "Single Design" and "Parametric Study" modes, the GUI values can be saved by 
+   pressing the "Save" button.  This creates the following files:
+
+	<OpenProp>/filename/filename_GUIsd.mat   -- "Single Design"    GUI values
+	<OpenProp>/filename/filename_GUIps.mat   -- "Parametric Study" GUI values
+
+   Similarly, prior GUI values can be loaded using the "Load" button and then choosing the
+   appropriate GUI mat file. 
+
+   NOTE: These files are automatically created/overwritten at runtime (i.e. when the 
+         "Run OpenProp" button is pressed).
+
+4. After running OpenProp, the "pt" data structure can be loaded into the Matlab workspace by:
+    	>> change the working directory to <OpenProp>/filename
+	>> load filename.mat
+
+
+------------------------------------------------------------------------------------------------
+Command line data input/output:
+
+1. In OpenProp, all propeller/turbine data is saved in a data structure called "pt". 
+   When running at the command line, the user may choose to use shorthand for the 
+   "input", "design", "geometry", and "states" data structures, as follows:
+	pt = 
+		pt.filename
+		pt.date
+		pt.i
+		pt.d
+		pt.g
+		pt.s
+
+	For an example of this notation, see ExP02_Propeller_Parametric_Study.
+
+2. The default inputs are listed in OpenProp_default_inputs.m, and the default input data 
+   structure is as follows.  Here, "999" indicates that a value must be specified by the user.
+   The user can create in input data structure that contains some or all of the other optional
+   inputs.  See EppsOptimizer.m, Analyze.m, Geometry.m, and AnalyzeGeometry.m to understand the usage of these inputs.
+
+	-----------------------------------
+	input =
+                part1: '------ Performance inputs ------'
+                    L: 999  (only used in turbine   case)	% tip speed ratio     (for propeller, L  = pi/Js)
+                   Js: 999  (only used in propeller case)	% advance coefficient (for turbine,   Js = pi/L )
+                   CT: 999  (only used in propeller case)	% desired total thrust coefficient (propeller plus duct)         (user may specify 'KT' or dimensional 'THRUST' instead)
+                   CQ: 999  (only used in propeller case)	% desired total torque coefficient (optional, in lieu of 'CT')   (user may specify 'KQ' or dimensional 'TORQUE' instead)
+								% Note: The    user must specify one of {'CT', 'KT', or 'THRUST'} to minimize torque for prescribed thrust,
+								%       or the user must specify one of {'CQ', 'KQ', or 'TORQUE'} to maximize thrust for prescribed  torque. 
+								% Note: For turbine case, 'CT' and 'CQ' are unnecessary and are ignored
+                part2: '------ Geometry inputs ------'
+                    Z: 999 					% number of blades
+             Meanline: 'NACA a=0.8 (modified)'			% meanline  form  (may be given as cell array of same length as XR)
+            Thickness: 'NACA 65A010'				% thickness form  (may be given as cell array of same length as XR)
+                part3: '------ Blade/Inflow inputs ------'
+                   XR: [1x10 double]				% radial ordinate / R 
+                 XCoD: [1x10 double]				% chord / D 			at XR
+                Xt0oD: [1x10 double]				% thickness / D			at XR
+                t0oc0: 0.1   * [1 1 1 1 1 1 1 1 1 1]		% thickness / chord		at XR (optional, in lieu of Xt0oD) 
+                  XCD: 0.008 * [1 1 1 1 1 1 1 1 1 1]		% section drag coefficient	at XR
+                  XVA: [1 1 1 1 1 1 1 1 1 1]			% axial inflow velocity / Vs	at XR
+                  XVT: [0 0 0 0 0 0 0 0 0 0]			% swirl inflow velocity / Vs	at XR
+                 dXVA: [0 0 0 0 0 0 0 0 0 0]			% variation in axial inflow velocity / Vs at XR (for cavitation analysis)
+               XCLmax: [1x10 double]				% max lift coefficient	at XR       (for chord optimization)
+                   ri: [1x10 double]				% [m] radial ordinate in dimensional units!         (optional)
+                  VAI: [1 1 1 1 1 1 1 1 1 1]			% axial inflow velocity / Vs              at ri (optional, in lieu of  'XVA')
+                  VTI: [0 0 0 0 0 0 0 0 0 0]			% swirl inflow velocity / Vs              at ri (optional, in lieu of  'XVT')
+                 dVAI: [0 0 0 0 0 0 0 0 0 0]			% variation in axial inflow velocity / Vs at ri (optional, in lieu of 'dXVA')
+                part4: '------ Computational inputs ------'
+       Propeller_flag: 999					% 0 == turbine, 1 == propeller
+         Viscous_flag: 999					% 0 == viscous forces off (CD = 0), 1 == viscous forces on
+             Hub_flag: 0					% 0 == no hub, 1 == hub
+            Duct_flag: 0					% 0 == no duct, 1 == duct
+           Chord_flag: 0					% 0 == do not optimize chord lengths, 1 == optimize chord
+            Plot_flag: 0					% 0 == do not display plots, 1 == display plots
+            Wake_flag: 0					% 0 == Horseshoe(...,Wrench(...)) analytic formulae, 1 == Wake_Horseshoe(...) numerical model
+ EppsOptimizer02_flag: 1   (only used in propeller case)	% Propeller optimization method (choose one only): LL-Linear
+ EppsOptimizer23_flag: 0   (only used in propeller case)	% Propeller optimization method (choose one only): LL-Newton (standard    hub drag model)
+ EppsOptimizer53_flag: 0   (only used in propeller case)	% Propeller optimization method (choose one only): LL-Newton (variational hub drag model)
+      Make2Dplot_flag: 1					% 1 == make 2D geometry plot
+      Make3Dplot_flag: 1					% 1 == make 3D geometry plot 
+      Make_Rhino_flag: 0					% 1 == make Rhino file
+      Make_SWrks_flag: 0					% 1 == make SolidWorks file
+    QuarterChord_flag: 0					% 0 == lifting line at mid-chord, 1 == lifting line at mid-chord (for geometry only)
+            LSGeoCorr: 'none'					% propeller Lifting Surface Geometry Corrections		
+          ChordMethod: 'CLmax'					% Method of chord optimization {'CLmax', 'ConeyPLL', 'FAST2011dCTP', 'FAST2011dVAC'}
+		  EAR: 0 					% Expanded Area Ratio specification (for chord optimization), ignored if EAR = 0
+                   Mp: 20					% number of panels radially
+                   Np: 20					% number of panels chordwise
+                 ITER: 50					% number of iterations in solvers 
+                  HUF: 0					% hub unloading factor
+                  TUF: 0					% tip unloading factor
+                  Rhv: 0.5					% hub vortex radius / hub radius
+           ALPHAstall: 8*pi/180					% [rad] stall angle of attack
+                part5: '------ Dimensional inputs (SI units) ------'
+                   Vs: 1					% [m/s] free-stream speed
+                    R: 1					% [m]	rotor radius (may give     diameter D    instead)
+                 Rhub: 0.2000					% [m]   hub radius   (may give hub diameter Dhub instead)
+                   Dm: 2					% [m]   model diameter 
+                  rho: 1000					% [kg/m^3] fluid density
+                    H: 3.0480					% [m]   shaft centerline depth (for cavitation analysis)
+                    g: 9.8100					% [m/s^2] gravitational constant (for cavitation analysis)
+                 Patm: 101325					% [Pa]  atmospheric pressure (for cavitation analysis)
+                   Pv: 2500					% [Pa]  vapor pressure (for cavitation analysis)
+                part6: '------ Duct inputs ------'
+             Rduct_oR: 1					% duct radius  			 (user may specify dimensional 'Rduct' instead)
+             Cduct_oR: 1					% duct chord length		 (user may specify dimensional 'Cduct' instead)
+             Xduct_oR: 0					% duct axial position downstream (user may specify dimensional 'Xduct' instead)
+                  CDd: 0.008					% duct drag coefficient
+                  TAU: 1      (only used in propeller case)	% thrust ratio == propeller thrust / total thrust 
+	          CTD: 0      (only used in turbine   case)     % desired duct thrust coefficient for turbine case (user may specify 'KTD' or dimensional 'THRUSTduct' instead)
+
+
+	-----------------------------------
+	design = 
+
+        part1: '------ Section properties, size (1,Mp) ------'
+           RC: [1x20 double] 					% radial coordinate of control points / R
+           DR: [1x20 double] 					% delta(RV)
+            G: [1x20 double] 					% circulation / (2*pi*R*Vs)
+          VAC: [1x20 double] 					%      axial free-stream speed / Vs
+          VTC: [1x20 double]					% tangential free-stream speed / Vs
+       UASTAR: [1x20 double] 					%      axial inducted velocity / Vs
+       UTSTAR: [1x20 double] 					% tangential inducted velocity / Vs
+        VSTAR: [1x20 double] 					% total inflow speed / Vs
+        TANBC: [1x20 double] 					% tangent of free-stream  inflow angle, Beta
+       TANBIC: [1x20 double] 					% tangent of wake-aligned inflow angle, BetaI
+           CL: [1x20 double] 					% section lift coefficient
+           CD: [1x20 double] 					% section drag coefficient
+          CoD: [1x20 double] 					% chord / diameter
+         t0oc: [1x20 double] 					% thickness / chord
+         t0oD: [1x20 double] 					% thickness / diameter
+        part2: '------ Other properties  ------'
+    converged: 1		 				% 1 == solver converged, 0 == solver did not converge
+    iteration: 7	 					% iteration number at conclusion of solver
+           RV: [1x21 double] 					% radial coordinate of vortex lattice points / R
+      Rhub_oR: 0.2000 						% Rhub / R
+          EAR: 0.6058 						% expanded area ratio
+           LM: -0.3950 						% Lagrange multiplier
+         VMIV: 1.0000 						% volumetric mean inflow velocity / Vs
+         VMWV: 1.1825 						% volumetric mean wake   velocity / Vs
+       SIGMAs: 257.4518 					% cavitation number
+        part3: '------ Performance metrics ------'
+            L: 3.7714 						% tip speed ratio
+           Js: 0.8330 						% advance coefficient
+           KT: 0.1500 						% thrust  coefficient
+           KQ: 0.0283 						% torque  coefficient
+           CT: 0.5505 						% thrust  coefficient
+           CQ: 0.2076 						% torque  coefficient
+           CP: 0.7831 						% power   coefficient
+          CTH: -0.0077 						% hub thrust coefficient
+         EFFY: 0.7030 						% efficiency
+       ADEFFY: 0.8908 						% actuator disk efficiency
+           QF: 0.7892 						% quality factor (EFFY/ADEFFY)
+
+
+	-----------------------------------
+ 	states = 
+
+        part1: '------ Off-design states ------'
+            L: [18x1 double]					% tip speed ratio
+           Js: [18x1 double]					% advance coefficient
+           RC: [1x20 double]					% radial coordinate of control points / R
+          CoD: [1x20 double]					% section chord length / rotor diameter
+            G: [18x20 double]
+       UASTAR: [18x20 double]					% ALL OTHERS SAME AS "design"
+       UTSTAR: [18x20 double]
+        VSTAR: [18x20 double]
+        TANBC: [18x20 double]
+       TANBIC: [18x20 double]
+        ALPHA: [18x20 double] 					% net angle of attack
+           CL: [18x20 double]
+           CD: [18x20 double]
+        part2: '------ Numerical metrics ------'
+    converged: [18x1 double]
+    iteration: [18x1 double]
+        part3: '------ Performance metrics ------'
+           KT: [18x1 double]
+           KQ: [18x1 double]
+           CT: [18x1 double]
+           CQ: [18x1 double]
+           CP: [18x1 double]
+         EFFY: [18x1 double]
+         VMWV: [18x1 double]
+
+
+	-----------------------------------
+	ginput =
+                part1: '------ Design piont inputs ------'
+                    L: 999  (only used in turbine   case)	% design point tip speed ratio     (for propeller, L  = pi/Js)
+                   Js: 999  (only used in propeller case)	% design point advance coefficient (for turbine,   Js = pi/L )
+								% Note: If the design point is unknown, use Js = pitch/diameter at blade tip
+
+                part2: '------ Rotor geometry inputs ------'
+                    Z: 999 					% number of blades
+              Rhub_oR: 999   % the user must specify one of the following: {Rhub_oR or (Rhub and R) or (Dhub and D) or Dhub_oD}
+
+                part3: '------ Blade/Inflow inputs ------'
+
+Note: The blade geometry table must be given either versus raw radii 'XR' or control point radii 'RC'
+                   XR  		RC				% radial ordinate / R   
+           (computed)    	RV               		% vortex point radii / R
+           (computed)    	DR               		% vortex panel width / R
+                 XCoD  		CoD				% chord / D 			
+  (XPoD or XTHETArad) 		(PoD or THETArad)		% pitch/diameter or pitch angle [rad]
+                  XVA   	VAC				% axial inflow velocity / Vs
+                  XVT  	 	VTC				% swirl inflow velocity / Vs                
+                   Mp						% number of panels radially (default Mp = 20)
+           
+Note: IF CLCD_flag == 0, then the Meanline and Thickness distributions must be given to determine the lift and drag characteristics
+                  XCD   	CD				% section drag coefficient	at XR
+                f0oc0   	f0oc    			% section camber / chord at XR
+      (Xt0oD or t0oc0)		t0oc				% thickness / D  or  thickness / chord  at XR 
+            dCLdALPHA		dCLdALPHA  			% lift curve slope [default: dCLdALPHA = 2*pi/(1 + 2/PAR) ], where PAR = propeller aspect ratio (computed)
+ 
+      For both the XR or RC data tables, the user must also provide either:
+ 
+            {'f0octilde','CLItilde', and 'alphaItilde'} 	% {ideal camber, ideal lift coefficient, and ideal angle of attack} versus XR or RC
+      or    {'Meanline' and 'Thickness'}			% meanline and thickness forms, which may be given as cell array of same length as XR or RC
+      
+
+      ELSE  CLCD_flag == 1, then the lift and drag coefficients must be given, tabulated versus radius and angle of attack:     
+                            Note: angle of attack is measured relative to blade pitch angle THETArad, such that ALPHA == 0 when the inflow angle BetaIC equals THETArad   
+         	      RELMdata      				% M == number of RELM  radii            (typically RELM == XR, but RELM can by any radii)        
+        	     ALPHAdata  				% N == number of ALPHA angles of attack 
+           		CLdata  				% CL(RELM,ALPHA) data matrix, size[M,N]
+          		CDdata  				% CD(RELM,ALPHA) data matrix, size[M,N]      
+      ENDIF
+
+                part4: '------ Computational inputs ------'
+       Propeller_flag: 999					% 0 == turbine, 1 == propeller
+         Viscous_flag: 999					% 0 == viscous forces off (CD = 0), 1 == viscous forces on
+             Hub_flag: 0					% 0 == no hub, 1 == hub
+            Duct_flag: 0					% 0 == no duct, 1 == duct
+            Plot_flag: 0					% 0 == do not display plots, 1 == display plots
+            Wake_flag: 0					% 0 == Horseshoe(...,Wrench(...)) analytic formulae, 1 == Wake_Horseshoe(...) numerical model
+            CLCD_flag: 0                                        % 0 == use CLCD_vs_ALPHA.m , 1 == use CL and CD data given in ginput
+            LSGeoCorr: 'Morgan1968'  (propeller default)	% propeller Lifting Surface Geometry Corrections {'none', 'Morgan1968', 'EckhardtMorgan1955', 'vanManen1958'}		
+            LSGeoCorr: 'none'        (turbine   default)	% propeller Lifting Surface Geometry Corrections - not recommended with turbines	
+                 ITER: 50					% number of iterations in solvers 
+                  Rhv: 0.5					% hub vortex radius / hub radius
+           ALPHAstall: 8*pi/180					% [rad] stall angle of attack
+ 
+             
+ 
+                 
+
+
+
+
+
+------------------------------------------------------------------------------------------------	
+Tips and tricks:
+
+1. To save keystrokes, unpack the pt data structure.  For example, to plot the design
+   circulation distribution:
+   
+	>> d = pt.design;
+	>> figure,
+	>> plot(d.RC,d.G)
+
+    Or to plot a turbine performance curve:
+
+	>> s = pt.states;
+	>> figure,
+	>> plot(s.L,-s.CP)
+

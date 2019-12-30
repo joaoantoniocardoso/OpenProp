@@ -1,0 +1,167 @@
+--------------------------------------------------------
+12/15/2013 BEPPS
+
+OpenProp v3.3.4 release notes:
+
+(EppsOptimizer.m)  v3.3.3 Bug: crashed when using the GUI and supplying an inflow profile.  
+	           v3.3.4 Fix: Lines EppsOptimizer.m 170-172, "ri" replaced with "RI".
+
+(ExT02_Turbine_Parametric_Study) Usage script version 2 created to show parametric study versus blade number.
+
+
+
+--------------------------------------------------------
+10/21/2013 BEPPS
+
+OpenProp v3.3.3 release notes:
+
+(Analyze.m)        now reports chord lengths in the states data structure, for convenient access in post processing (states.CoD = pt.design.CoD;)
+
+(AnalyzeAuto.m)    now reports chord lengths in the states data structure, for convenient access in post processing (states.CoD = pt.design.CoD;)
+
+(GeometryFoil2D.m) now includes the 'NACA 00xx' thickness form for NACA four-digit airfoils
+
+(InterpolateChord.m, lines 73-80) now handles the case of a finite chord length at the blade tip (as typical in the turbine case or ducted-propeller case)
+
+(OpenProp_v3.3.3 User Guide.txt)  now includes a description of the "ginput" data structure for geometry analysis with AnalyzeGeometry.m
+
+
+
+Bugs in OpenProp_v3.3.2 that are fixed in OpenProp_v3.3.3:
+
+(OpenPropSingle.m, line 1150)
+	-- OpenProp_v3.3.3   correct:   pt.design.Q = pt.design.CQ * 0.5 * rho * Vs^2 * pi*D^2/4 * D/2; % [Nm]  torque
+	-- OpenProp_v3.3.2 incorrect:   pt.design.Q = pt.design.CQ * 0.5 * rho * Vs^2 * pi*D^2/4;       % [Nm]  torque
+	-- OpenProp_v2.4.6   correct:   pt.design.Q = pt.design.KQ * rho * n^2 * D^5;                   % [Nm]  torque
+
+
+(Cav_CavitationMap.m, line 196)
+	-- OpenProp_v3.3.3   correct:   sigma  = (Patm + rho*g*(H-RC) - Pv)./(0.5*rho*(VSTAR*Vs).^2); %  cavitation number
+	-- OpenProp_v3.3.2 incorrect:   sigma  = (Patm + rho*g*(H-RC) - Pv)/(0.5*rho*(VSTAR*Vs)^2); %  cavitation number 
+
+
+
+--------------------------------------------------------
+8/1/2013 BEPPS
+
+OpenProp v3.3.2 release notes:
+
+-- Blade section "Meanline" and "Thickness" forms can now be specified as a cell array (one for each input radius "XR").  (Analyze.m, AnalyzeGeometry.m, EppsOptimizer.m, Geometry.m, GeometryFromData.m, Stress_Analysis.m, Stress_BladeGeometry.m) 
+-- Lift and drag coefficients can now be given as tabulated data rather than use the CLCD_vs_ALPHA.m model.  (AnalyzeGeometry.m)
+-- Propellers can now be optimized to achieve maximum thrust for a specified torque. (EppsOptimizer.m)
+-- Improved numerical stability of various algorithms (EppsOptimizer.m, Align_wake.m, Align_wake_Newton.m)
+-- Improved initialization method for propeller design at bollard pull (EppsOptimizer.m)
+-- An open-water Quality Factor "QFo" and wake-adapted Quality Factor "QFw" are now reported for bollard pull propeller design (EppsOptimizer.m, Forces.m)
+-- The user can now specify the radial ordinates at which to evaluate the blade section geometry, "RG". (Geometry.m)
+-- Improved blade tip geometry generation, providing for zero or non-zero tip chord lengths (Cav_CavitationMap.m, EppsOptimizer.m, Geometry.m, LerbsOptimizer.m)
+-- Improved duct geometry generation (Geometry.m, Duct_Plot_120329.m, Make_3D_Blade_Image.m)
+-- Bug fix: Windows machines did not correctly display carriage returns in output files, which also caused a bug when reading files into SolidWorks.  The fopen function is now correctly implemented ( fopen(filename,'wt') ), which fixed this bug (Make_Reports.m, Export_Rhino_v1.m, Export_SolidWorks_v14.m, Export_SolidWorks_v18.m, Export_SolidWorks_v18_OneLine.m)
+
+Bugs in OpenProp_v2.4.6 fixed in OpenProp_v3.3.2
+
+-- In Geometry.m (line 1400 in v2.4.6), "RC" had been changed to "RG" (approximately line 848 in v3.3.2)
+
+-- In Cav_CavitationMap.m (line 73 in revision 2.4.6), the angle ALPHA is in degrees whereas the function VLM2D uses radians.  ALPHA has been change to radians within Analyze.m, AnalyzeAuto.m, AnalyzeGeometry.m, and AnalyzeSingleState.m.
+
+-- In Cav_CavitationMap.m, the cavitation number has been changed from
+		sigma = (Patm + rho*g*H      - Pv)/(0.5*rho*(VSTAR*Vs)^2);     (OpenProp_v2.4.6)
+	to
+ 		sigma = (Patm + rho*g*(H-RC) - Pv)/(0.5*rho*(VSTAR*Vs)^2);     (OpenProp_v3.3.2)
+
+	where "H-RC" accounts for a blade at the 12 o'clock position, which is the worst case scenario
+
+
+
+
+
+--------------------------------------------------------
+--------------------------------------------------------
+
+
+
+
+--------------------------------------------------------
+11/2/2011 BEPPS
+
+OpenProp v3.2.0 release notes:
+
+This release represents a major overhaul of the OpenProp suite, including
+
+-- New wake model for rotor self-induction velocities (see Horseshoe110628.m).
+-- New implementation of the interaction velocities (see Horseshoe_intr_110830.m).
+-- New implementation of the ducted case for both propellers and turbines (see Duct_Model.m).
+-- Improved numerical stability of the propeller optimization algorithm.
+-- New turbine optimization algorithm.
+-- New chord length optimization procedure, implementing the method discussed in (Epps et al., FAST'2011).
+-- Lifting surface geometry corrections for more accurate propeller geometry for prototyping.
+-- Analysis of given propeller geometry, with and without propeller lifting surface geometry corrections.
+-- This version also includes useful miscellaneous MATLAB utilities.
+-- This version also includes cavitation analysis.
+-- This version also includes stress analysis.
+
+--------------------------------------------------------
+--------------------------------------------------------
+
+
+
+--------------------------------------------------------
+10/25/2011 BEPPS
+
+OpenProp v2.4.6 release notes:
+
+-- NEW FEATURE: The user may now specify a maximum lift coefficient distribution for chord length optimization. (OpenPropSingle.m and OpenPropParam.m were modified)
+
+-- NEW FEATURE: A checkbox was added to the GUI to allow for selecting whether or not to create a performance curve.  (OpenPropSingle.m, line 782)
+
+-- BUG SQUASH: Make_Reports.m line 200 updated, so the GUI correctly displays BetaIC in degrees.
+
+-- BUG SQUASH: OpenPropSingle.m, line 569, GUI label "t0/c" changed to "t0/D", since the code interprets that column as t0/D.
+
+-- CODE IMPROVEMENT:  EppsOptimizer.m was edited so the "Optimization plots" are plotted during each iteration of the optimizer, without massively slowing down the code.
+
+-- CODE IMPROVEMENT:  InterpolateChord.m function is now used to interpolate chord lengths using a cubic B-spline.  This subroutine is called in: (EppsOptimizer.m, line 306), (Geometry.m, line 198, 200), (Make_Reports.m, line 274), and OpenPropSingle.m, line 1153).
+
+
+
+-------------------------------------------------------
+1/17/2011 BEPPS
+
+OpenProp v2.4.3 release notes:
+
+-- EppsParametric.m and EppsParametricDucted.m added: Perform parametric design study while calling EppsOptimizer.m design optimization engine.  
+
+-- Example4_Propeller updated: now shows how to use EppsParametric.m and LerbsParametric.m
+
+-- EppsOptimizer.m, Analyze.m, and Geometry.m updated: design.BetaIC is in degrees, whereas states.BetaIC is in radians, correctly output and handled.  (Prior versions of OpenProp had design.BetaIC in radians.)
+
+
+--------------------------------------------------------
+12/14/2010 BEPPS
+
+OpenProp v2.4.2 release notes:
+
+-- RepairSpline.m added: For improved robustness of the code, particularly for wake-adapted propeller design, Repair.m has been replaced with RepairSpline.m.  
+
+-- openprop.m added (in SourceCode directory):  Users may now launch OpenProp from the SourceCode directory.
+
+--------------------------------------------------------
+12/13/2010 BEPPS
+
+OpenProp v2.4.1 release notes:
+
+-- BUG SQUASH: In version 2.4.0, the inflow profiles XVA and XVT were not made backwards compatible with version 2.3.0.  This has been fixed in v2.4.1.  Now users can specify normalized inflow velocities VAI (== Va/Vs) and VTI (== Vt/Vs) versus radius, ri (== r  [meters]), or specify normalized inflow velocities XVA (== Va/Vs) and XVT (== Vt/Vs) versus normalized radius XR (== r/R).
+
+-- The derivative dCdG was removed from the optimizer, allowing for more general chord length optimization.
+
+-- Users can now specify the Expanded Area Ratio as input.EAR.  If chord length optimization is selected and input.EAR is present, the chord length optimizer will scale the chord length distribution such that EAR == input.EAR.
+
+
+
+--------------------------------------------------------
+12/13/2010 BEPPS
+
+OpenProp v2.4.0 release notes:
+
+-- OpenProp v2.4.0 features the addition of the graphical user interface (GUI).  Users can interact with OpenProp using the v2.3 command line usage scripts or using the GUI.
+
+-- In version 2.4.0, users can specify normalized inflow velocities VAI (== Va/Vs) and VTI (== Vt/Vs) versus radius, ri (== r  [meters]) to design a wake-adapted propeller.  BUG: Users may not specify normalized inflow velocities XVA (== Va/Vs) and XVT (== Vt/Vs) versus normalized radius XR (== r/R).

@@ -1,0 +1,19 @@
+Rhino instructions:
+
+Created by: Jordan Stanway, 10/7/2009
+
+
+To make an STL from Rhino, you want to follow the procedure on p. 54 of Kate's Thesis. The whole process is:
+	1. Run script: ReadCommandFile
+	2. Make sure all normals point out: Dir  (not always necessary)
+	3. Merge blades and hub: BooleanUnion
+	4. Create a polygon mesh: Mesh
+	5. Weld the mesh: SelMesh Weld 180
+	6. Make sure mesh normals point out: UnifyMeshNormals
+	7. Check for watertightness: SelNakedMeshEdgePt
+
+Then you can save it as an STL file. You may need to play with the mesh tolerances to get a good one.
+
+Putting a small fillet or chamfer on the front and back edges of the hub can help the mesh generator and get rid of naked mesh edge points there. You can also *usually* use FilletSrf to put a fillet between the blade and hub.
+
+You can upload your STL file and check it at xpress3d.com.

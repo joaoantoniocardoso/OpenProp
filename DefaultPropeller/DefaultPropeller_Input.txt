@@ -1,0 +1,35 @@
+					 DefaultPropeller_Input.txt 
+
+					 OpenProp Input Table
+
+Date and time: 2019-04-12 15:06:24
+
+20 	Number of Vortex Panels over the Radius
+1 	Hub Image Flag: 1=YES, 0=NO
+0 	Duct Flag:      1=YES, 0=NO
+0.350 	Duct Diameter
+0.5 	Hub Vortex Radius/Hub Radius
+2 	Number of Blades
+0.429 	Advance Coefficient Based on Ship Speed, Js
+0.179 	Desired Thrust Coefficient, Ct
+1.000 	Desired Thrust Ratio, tau
+0.000 	Duct Section Drag Coefficient, CDd
+0 	Hub Unloading Factor: 0 = optimum
+0 	Tip Unloading Factor: 1 = Reduced Loading
+r/R  	  C/D  	   XCD	    Va/Vs  Vt/Vs
+0.20000  0.50000  0.00800    1.00  0.0000
+0.30000  0.46250  0.00800    1.00  0.0000
+0.40000  0.42500  0.00800    1.00  0.0000
+0.50000  0.38750  0.00800    1.00  0.0000
+0.60000  0.35000  0.00800    1.00  0.0000
+0.70000  0.31250  0.00800    1.00  0.0000
+0.80000  0.27500  0.00800    1.00  0.0000
+0.90000  0.23750  0.00800    1.00  0.0000
+0.95000  0.21875  0.00800    1.00  0.0000
+1.00000  0.20000  0.00800    1.00  0.0000
+
+r/R 	 [ ], input radial position / propeller radius.
+c/D 	 [ ], input section chord-length / propeller diameter.
+Cd 	 [ ], input section drag coefficient.
+Va 	 [ ], input axial inflow velocity / ship velocity.
+Vt 	 [ ], input tangential inflow velocity / ship velocity.

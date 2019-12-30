@@ -1,0 +1,98 @@
+SolidWorks instructions:
+Created: Rob Damus,     9/24/2009
+ Edited: Brenden Epps, 10/ 6/2009 
+
+Follow these steps to create a solid propeller blade in SolidWorks:
+
+
+___ Create your hub ----
+
+1. Draw the hub in SolidWorks, and save it in a SolidWorks part document file
+
+2. Copy your hub file and rename it something like hub_with_blades.swp
+
+3. Open hub_with_blades.swp
+
+4. Run the following steps to add the key blade to the hub:
+
+--- Create the key blade ----
+
+1. Export filename_SolidWorks.txt from the OpenProp Geometry function.
+	-- Make sure that the trailing edge point (2Np-1) is the same as point (1), so all blade sections are closed contours.
+
+2. Run the OpenProp SolidWorks macro:
+	-- (In SolidWorks)  Tools > Macro > Edit
+	-- Open SolidWorks_macro_v18.swp
+	-- Press the play button
+	-- This should result in a sketch of blade sections and guide curves over surface points.
+
+3. Create Surface Loft of the SectionCurve1...SectionCurve21
+	-- Select all 21 SectionCurves in the Feature Manager
+	-- Insert > Surface > Loft  (orange loft button)
+ 	-- Select GuideCurves 1-6.  GuideCurve 7 is an artifact of Solidworks_macro_v14 and should be ignored in macro v18.
+	-- Check "Merge tangent faces"
+	-- Uncheck "Close loft"
+
+3. Create Surface-Fill at tip
+	-- Insert > Surface > Fill
+	-- For Patch Boundary: select TipSectionCurve21
+	-- For Constraint Curves: select all TipCurves
+	-- Check "Fix up boundary" and "Optimize Surface"
+
+4. Create Surface-Fill at root
+	-- Insert > Surface > Fill
+	-- For Patch Boundary: select RootSectionCurve1
+	-- For Constraint Curves: select all RootCurves
+	-- Check "Fix up boundary" and "Optimize Surface"
+
+4. Knit surfaces into a solid
+	-- Insert > Surface > Knit
+	-- Select Surface-Loft, Boundary-Surface, Surface-Fill1, and Surface-Fill2
+	-- Check "Try to form Solid"
+
+If the stars align, you will generate a solid body for the blade, that will be accessible under the Solid Bodies node in the Feature Manager tree.
+
+
+----- To create a propeller from the single blade -----
+
+
+1. Draw the propeller axis
+	-- Choose the line tool
+	-- Select the Front Plane
+	-- Select Horizontal orientation, "For construction", and "infinite length"
+	-- Click on the origin to place the line along the X-axis
+	-- Exit the sketch
+
+2. Create Z blades
+	-- Insert > Pattern/Mirror > Circular Pattern
+	-- For the "Parameters": select the propeller axis, set the number of instances to Z, set the angle to 360 deg, and check "Equal spacing"
+	-- For the "Bodies to Pattern": In the "Solid Bodies" folder in the Feature Manager tree, select "Surface-Knit1", which highlight the solid body of your propeller blade.
+	-- 
+
+
+3. Combine the blades and hub.
+	-- In the Feature Manager tree, select the hub, key blade, and CirPattern (remaining blades).
+	-- Insert > Features > Combine.
+	-- Operation type is "Add"
+
+4. Add a filet radius to the seam between blade and hub
+	-- Insert > Features > Fillet/Round
+	-- Fillet type = "Face fillet", Radius = 0.01 in, Items to fillet: select hub and blade
+	-- Repeat this for each blade
+
+
+
+
+1. Set the units to MKS or MMGS
+	-- Tools > Options > Document Properties > Units
+	-- Note: SolidWorks may not export dimensions correctly in MKS mode (i.e. The file says length is measured in meters, but dimensions are given in milimeters.)
+
+
+
+
+___ Save STL file ----
+
+1. File > Save as
+	-- STL file format
+	-- Note: click the "Options" button, and increase the resolution of the part for best 3D printing.
+

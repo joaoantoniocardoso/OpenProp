@@ -1,0 +1,229 @@
+' ******************************************************************************
+' C:\DOCUME~1\TIMOTH~1\LOCALS~1\Temp\swx3140\Macro1.swb - macro recorded on 01/24/09 by timothyjvincent
+' ******************************************************************************
+
+'Note:  This code was written for SolidWorks 2008.  It may need to be modified to
+'work properly on another version of this software.
+
+Dim swApp As Object
+Dim Part As Object
+Dim SelMgr As Object
+Dim boolstatus As Boolean
+Dim longstatus As Long, longwarnings As Long
+Dim Feature As Object
+Sub main()
+
+Set swApp = Application.SldWorks
+
+Set Part = swApp.ActiveDoc
+Set SelMgr = Part.SelectionManager
+Dim swSketch As SldWorks.Sketch
+Dim swFeat As SldWorks.Feature
+
+
+'Set units to Meter, Kilogram, Second
+Part.SetUserPreferenceIntegerValue swImageQualityWireframe, swWireframeImageQualityCustom
+
+'-------- Make Curves from Text File with Data points---------
+Dim NextPoint As Boolean
+Dim CurveFile As Integer
+Dim x, y, z As Single
+Dim vPoints As Variant
+Dim vPoints2 As Variant
+Dim pointArray() As Double
+Dim pointArray2() As Double
+Dim i, j As Integer
+Dim CFD As String
+Dim openboxConfig As String
+Dim openboxDisplayName As String
+Dim fileoptions As Long
+Dim Np, Mp, bladeNum As Integer
+Dim CurveName() As String
+
+
+curvefilepath = swApp.GetOpenFileName("Select Geometry File", "T", "Text Files|*.txt", fileoptions, openboxConfig, openboxDisplayName)
+If curvefilepath = "" Then
+    Exit Sub
+End If
+CurveFile = FreeFile 'Finds an open file number to be used by the Open statement
+Open curvefilepath For Input As #CurveFile
+
+Input #CurveFile, Np, Mp, bladeNum
+
+ReDim CurveName(0 To Mp - 1 + 7) As String
+
+'----------- Create section profile curves ------------
+For i = 1 To Mp + 1 'For each section profile
+    
+    Input #CurveFile, CurveName(i - 1)
+    CurveName(i - 1) = "SectionCurve" & i 'The Input function reads carriage returns as text so we cannot use the identifiers from the file
+    
+    ReDim pointArray(0 To 3 * (2 * Np - 1) - 1) As Double
+
+    For j = 0 To 2 * Np - 1 - 1
+        Input #CurveFile, x, y, z
+        pointArray(j * 3) = x
+        pointArray(j * 3 + 1) = y
+        pointArray(j * 3 + 2) = z
+    Next
+            
+    vPoints = pointArray
+    
+    Part.SketchManager.Insert3DSketch True
+    Dim SkSpline As Object
+    Set SkSpline = Part.SketchManager.CreateSpline((vPoints))
+    Set swSketch = swApp.ActiveDoc.GetActiveSketch2
+    Set swFeat = swSketch
+    swFeat.Name = CurveName(i - 1)
+
+    Part.SketchManager.Insert3DSketch True
+    Part.ClearSelection2 True
+Next
+'-----------------------------------------
+
+
+
+'--------- Create GuideCurves -----------
+For j = 1 To 7  'For each GuideCurve
+
+    Input #CurveFile, CurveName((Mp - 1) + j)
+    
+    Part.InsertCurveFileBegin
+        For i = 1 To Mp + 1
+            Input #CurveFile, x, y, z
+            Part.InsertCurveFilePoint x, y, z
+        Next
+    Part.InsertCurveFileEnd
+    
+    Part.SelectedFeatureProperties 0, 0, 0, 0, 0, 0, 0, 1, 0, "GuideCurve" & j
+    Part.BlankRefGeom
+Next
+'-----------------------------------------
+
+
+
+'--------- Create Duplicate Trailing Edge GuideCurves -----------
+    Input #CurveFile, CurveName(0)
+    
+    Part.InsertCurveFileBegin
+        For i = 1 To Mp + 1
+            Input #CurveFile, x, y, z
+            Part.InsertCurveFilePoint x, y, z
+        Next
+    Part.InsertCurveFileEnd
+    
+    Part.SelectedFeatureProperties 0, 0, 0, 0, 0, 0, 0, 1, 0, "TEGuideCurve1"
+    Part.BlankRefGeom
+'-----------------------------------------
+
+
+
+'--------- Create Duplicate Trailing Edge GuideCurves -----------
+    Input #CurveFile, CurveName(0)
+    
+    Part.InsertCurveFileBegin
+        For i = 1 To Mp + 1
+            Input #CurveFile, x, y, z
+            Part.InsertCurveFilePoint x, y, z
+        Next
+    Part.InsertCurveFileEnd
+    
+    Part.SelectedFeatureProperties 0, 0, 0, 0, 0, 0, 0, 1, 0, "TEGuideCurve7"
+    Part.BlankRefGeom
+'-----------------------------------------
+
+
+
+'--------- Create Duplicate Tip Section Curve -----------
+    Input #CurveFile, CurveName(0)
+    
+    Part.InsertCurveFileBegin
+        For i = 0 To 2 * Np - 1 - 1
+            Input #CurveFile, x, y, z
+            Part.InsertCurveFilePoint x, y, z
+        Next
+    Part.InsertCurveFileEnd
+    
+    Part.SelectedFeatureProperties 0, 0, 0, 0, 0, 0, 0, 1, 0, "TipSectionCurve21"
+    Part.BlankRefGeom
+'-----------------------------------------
+
+
+'----------- Create tip curves ------------
+For k = 2 To (Np - 1) 'For each point along the tip section
+    
+    Input #CurveFile, CurveName(0)
+    CurveName(0) = "TipCurve" & k   'The Input function reads carriage returns as text so we cannot use the identifiers from the file
+    
+    ReDim pointArray(0 To 3 * (2) - 1) As Double
+
+    For j = 0 To 1
+        Input #CurveFile, x, y, z
+        pointArray(j * 3) = x
+        pointArray(j * 3 + 1) = y
+        pointArray(j * 3 + 2) = z
+    Next
+            
+    vPoints = pointArray
+    
+    Part.SketchManager.Insert3DSketch True
+    Set SkSpline = Part.SketchManager.CreateSpline((vPoints))
+    Set swSketch = swApp.ActiveDoc.GetActiveSketch2
+    Set swFeat = swSketch
+    swFeat.Name = CurveName(0)
+
+    Part.SketchManager.Insert3DSketch True
+    Part.ClearSelection2 True
+Next
+'-----------------------------------------
+
+
+'--------- Create Duplicate Root Section Curve -----------
+    Input #CurveFile, CurveName(0)
+    
+    Part.InsertCurveFileBegin
+        For i = 0 To 2 * Np - 1 - 1
+            Input #CurveFile, x, y, z
+            Part.InsertCurveFilePoint x, y, z
+        Next
+    Part.InsertCurveFileEnd
+    
+    Part.SelectedFeatureProperties 0, 0, 0, 0, 0, 0, 0, 1, 0, "RootSectionCurve1"
+    Part.BlankRefGeom
+'-----------------------------------------
+
+
+'----------- Create root curves ------------
+For k = 2 To (Np - 1) 'For each point along the tip section
+    
+    Input #CurveFile, CurveName(0)
+    CurveName(0) = "RootCurve" & k   'The Input function reads carriage returns as text so we cannot use the identifiers from the file
+    
+    ReDim pointArray(0 To 3 * (2) - 1) As Double
+
+    For j = 0 To 1
+        Input #CurveFile, x, y, z
+        pointArray(j * 3) = x
+        pointArray(j * 3 + 1) = y
+        pointArray(j * 3 + 2) = z
+    Next
+            
+    vPoints = pointArray
+    
+    Part.SketchManager.Insert3DSketch True
+    Set SkSpline = Part.SketchManager.CreateSpline((vPoints))
+    Set swSketch = swApp.ActiveDoc.GetActiveSketch2
+    Set swFeat = swSketch
+    swFeat.Name = CurveName(0)
+
+    Part.SketchManager.Insert3DSketch True
+    Part.ClearSelection2 True
+Next
+'-----------------------------------------
+
+
+
+    
+End Sub
+
+
