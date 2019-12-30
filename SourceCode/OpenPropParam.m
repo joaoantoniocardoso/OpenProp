@@ -68,8 +68,7 @@ function OpenPropParam
 
 clear all;
 
-addpath ../SourceCode
-
+#addpath("../SourceCode")
 
 %%
 
@@ -667,18 +666,18 @@ while ~isempty(rest)
             % you are in /OpenPropDirectory/
             mkdir(['./',filename])
                cd(['./',filename])
-               addpath ../SourceCode
+               #addpath("../SourceCode")
                
         elseif strcmp(rest(2:end),filename)
             % already in /OpenPropDirectory/filename/
-            addpath ../SourceCode
+            #addpath("../SourceCode")
             rest = [];
             
         elseif strcmp(rest(2:end),'SourceCode')
             
             mkdir(['../',filename])
                cd(['../',filename])
-               addpath ../SourceCode
+               #addpath("../SourceCode")
             rest = [];
             
         else
@@ -969,7 +968,7 @@ while ~isempty(rest)
             % already in /OpenPropDirectory/filename/
             rest = [];
             
-            addpath ../SourceCode
+            #addpath("../SourceCode")
             
         elseif strcmp(rest(2:end),'SourceCode')
             
@@ -977,7 +976,7 @@ while ~isempty(rest)
                cd(['../',filename])
             rest = [];
             
-            addpath ../SourceCode
+            #addpath("../SourceCode")
             
         elseif isempty(rest)
             
@@ -985,7 +984,7 @@ while ~isempty(rest)
             mkdir(['./',filename])
                cd(['./',filename])
                
-            addpath ../SourceCode
+            #addpath("../SourceCode")
                
         else
             % you are in /OpenPropDirectory/wrongfolder
@@ -1097,18 +1096,21 @@ end
 if     strcmp(CurrentDirectory,OpenPropDirectory)    % OpenPropDirectory == 'OpenProp_v3.3.4';
     
     % stay in /OpenPropDirectory/
-    uiload;
+    %uiload;
+    uigetfile;
     cd(['./',filename])
     
 elseif strcmp(CurrentDirectory,'SourceCode')
     
     cd('../')
-    uiload;
+    %uiload;
+    uigetfile;
     cd(['./',filename])
         
 else
     % already in /OpenPropDirectory/filename
-    uiload;
+    %uiload;
+    uigetfile;
 end
 % -------------------------------------------------------------------------
 
@@ -1417,16 +1419,16 @@ while ~isempty(rest)
         if isempty(rest)
             
             % you are in /OpenPropDirectory/
-            %             addpath ../SourceCode
+            %             #addpath("../SourceCode")
             
         elseif strcmp(rest(2:end),filename)
             % already in /OpenPropDirectory/filename/
-            %             addpath ../SourceCode
+            %             #addpath("../SourceCode")
             rest = [];
             
         elseif strcmp(rest(2:end),'SourceCode')
             
-            %             addpath ../SourceCode
+            %             #addpath("../SourceCode")
             rest = [];
             
         else

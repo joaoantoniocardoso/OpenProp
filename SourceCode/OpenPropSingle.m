@@ -68,9 +68,7 @@ function OpenPropSingle
     clear all;
     clear global;
 
-    % warning off
-    addpath ../SourceCode
-    % addpath  ./SourceCode
+    #addpath("../SourceCode")
 
 
     % =========================================================================
@@ -870,18 +868,18 @@ function execute(hObject,ED)
                 % you are in /OpenPropDirectory/
                 mkdir(['./',filename])
                    cd(['./',filename])
-                   addpath ../SourceCode
+                   #addpath("../SourceCode")
 
             elseif strcmp(rest(2:end),filename)
                 % already in /OpenPropDirectory/filename/
-                addpath ../SourceCode
+                #addpath("../SourceCode")
                 rest = [];
 
             elseif strcmp(rest(2:end),'SourceCode')
 
                 mkdir(['../',filename])
                    cd(['../',filename])
-                   addpath ../SourceCode
+                   #addpath("../SourceCode")
                 rest = [];
 
             else
@@ -1507,7 +1505,7 @@ function savedata(hObject,ED)
                 % already in /OpenPropDirectory/filename/
                 rest = [];
 
-                addpath ../SourceCode
+                #addpath("../SourceCode")
 
             elseif strcmp(rest(2:end),'SourceCode')
 
@@ -1515,7 +1513,7 @@ function savedata(hObject,ED)
                    cd(['../',filename])
                 rest = [];
 
-                addpath ../SourceCode
+                #addpath("../SourceCode")
 
             elseif isempty(rest)
 
@@ -1523,7 +1521,7 @@ function savedata(hObject,ED)
                 mkdir(['./',filename])
                    cd(['./',filename])
 
-                addpath ../SourceCode
+                #addpath("../SourceCode")
 
             else
                 % you are in /OpenPropDirectory/wrongfolder
@@ -1628,18 +1626,21 @@ function loaddata(hObject,ED)
     if     strcmp(CurrentDirectory,OpenPropDirectory)    % OpenPropDirectory == 'OpenProp_vX.X.X';
 
         % stay in /OpenPropDirectory/
-        uiload;
+        %uiload;
+        uigetfile;
         cd(['./',filename])
 
     elseif strcmp(CurrentDirectory,'SourceCode')
 
         cd('../')
-        uiload;
+        %uiload;
+        uigetfile;
         cd(['./',filename])
 
     else
         % already in /OpenPropDirectory/filename
-        uiload;
+        %uiload;
+        uigetfile;
     end
     % -------------------------------------------------------------------------
 
@@ -1773,16 +1774,16 @@ function changeDir(hObject,ED)
             if isempty(rest)
 
                 % you are in /OpenPropDirectory/
-                %             addpath ../SourceCode
+                %             #addpath("../SourceCode")
 
             elseif strcmp(rest(2:end),filename)
                 % already in /OpenPropDirectory/filename/
-                %             addpath ../SourceCode
+                %             #addpath("../SourceCode")
                 rest = [];
 
             elseif strcmp(rest(2:end),'SourceCode')
 
-                %             addpath ../SourceCode
+                %             #addpath("../SourceCode")
                 rest = [];
 
             else
